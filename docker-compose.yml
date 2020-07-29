@@ -1,0 +1,33 @@
+version: '3'
+
+cache:
+  paths:
+    - vendor/bundle
+    - node_modules
+
+services:
+  db:
+    image: 'postgres:10-alpine'
+    environment:
+      POSTGRES_USER: #DockerHub postgres docs state this is optional but must be used when password is set.  It will also create a db under the supplied username which you'll use to connect to in rails console such as: $docker-compose exec postgres psql -U YourUserNameHere
+      POSTGRES_PASSWORD: #password
+    env_file: .env
+    volumes:
+      - 'postgres:/var/lib/postgresql/data'
+    ports:
+      - '5432'
+
+  web:
+    depends_on:
+      - 'db'
+    build: .
+    command: /bin/bash -c "rm -f /tmp/server.pid && bundle exec rails server -b 0.0.0.0 -P /tmp/server.pid"
+    ports:
+      - '3000:3000'
+    volumes:
+      - '.:/network'
+    env_file:
+      - '.env'
+
+volumes:
+  postgres:

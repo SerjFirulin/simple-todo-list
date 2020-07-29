@@ -1,0 +1,1 @@
+json.array! @todo_lists, partial: "api/v1/todo_lists/todo_list", as: :todo_list
